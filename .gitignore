@@ -1,0 +1,15 @@
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Bedrock installation scripts (avoid committing large installer payloads)
+*.sh.part
+*.tar.gz
+*.tar.xz
+bedrock-linux-*.sh
+
+# Editor artifacts
+*~
+*.swp
+.idea/
+.vscode/
