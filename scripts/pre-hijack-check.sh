@@ -52,10 +52,10 @@ fi
 
 # 3. Root Filesystem & Extended Attributes (xattr) Check
 info "Checking root filesystem type and extended attribute support..."
-ROOT_FS=$(df -T / | awk 'NR==2 {print $2}')
+ROOT_FS=$(stat -f -c %T / 2>/dev/null || df --output=fstype / 2>/dev/null | tail -n 1 | tr -d ' ' || echo "unknown")
 info "Root filesystem: $ROOT_FS"
 
-if [[ "$ROOT_FS" =~ ^(ext4|btrfs|xfs|f2fs)$ ]]; then
+if [[ "$ROOT_FS" =~ ^(ext2/ext3|ext4|btrfs|xfs|f2fs|tmpfs)$ ]]; then
     pass "Filesystem $ROOT_FS supports POSIX extended attributes."
 else
     warn "Filesystem $ROOT_FS may not support POSIX extended attributes. Check Bedrock compatibility docs."
@@ -74,7 +74,7 @@ fi
 
 # 4. Free Disk Space
 info "Checking root partition free space..."
-FREE_MB=$(df -m / | awk 'NR==2 {print $4}')
+FREE_MB=$(df --output=avail -m / 2>/dev/null | tail -n 1 | tr -d ' ' || echo "0")
 if (( FREE_MB > 5120 )); then
     pass "Free space on /: ${FREE_MB} MB (> 5 GB recommended)."
 else
